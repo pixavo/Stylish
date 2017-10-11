@@ -158,7 +158,7 @@ public extension Styleable where Self:UIView {
                 }
             }
         }
-        else if let moduleName = Stylish.appBundle.infoDictionary?[String(kCFBundleNameKey)] as? String, let stylesheetType = NSClassFromString("\(moduleName).\(stylesheetName)") as? Stylesheet.Type {
+        else if let stylesheetType = NSClassFromString("\(stylesheetName)") as? Stylesheet.Type {
             let stylesheet = useCachedJSON(forStylesheetType: stylesheetType) ? JSONStylesheet.cachedStylesheet! : stylesheetType.init()
             for string in components where string != "" {
                 if let style = stylesheet[string] {
