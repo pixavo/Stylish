@@ -193,6 +193,8 @@ public extension Styleable where Self:UIView {
                 }
             }
         }
+
+        return stylesheetTypeFromName(stylesheetName)
     }
     
     private func useCachedJSON(forStylesheetType:Stylesheet.Type) -> Bool {
