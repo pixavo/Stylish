@@ -28,6 +28,14 @@ public struct Stylish {
         }
     }
     
+    internal static var sharedStyleClasses: [(identifier: String, styleClass: StyleClass)] = []
+    
+    /// A method that allows client apps to register style classes that should be added to ALL stylesheets. This is useful for common styles that should always remain the same and be available, regardless of which stylesheet is currently applied in the app
+    public static func registerSharedStyleClasses(_ styleClasses:[(identifier: String, styleClass: StyleClass)]) {
+        let nonDuplicates = styleClasses.filter{ styleClass in !sharedStyleClasses.contains{ $0.identifier == styleClass.identifier }}
+        sharedStyleClasses += nonDuplicates
+    }
+    
     /// Refreshes the styles of all views in the app, in the event of a stylesheet =change or update, etc.
     public static func refreshAllStyles() {
         for window in UIApplication.shared.windows {
@@ -141,8 +149,16 @@ public extension Styleable where Self:UIView {
     
     public func parseAndApply(styles:String, usingStylesheet stylesheetName:String) {
         let components = styles.replacingOccurrences(of: ", ", with: ",").replacingOccurrences(of: " ,", with: ",").components(separatedBy:",")
-        
-        if let moduleName = Stylish.appBundle.infoDictionary?[String(kCFBundleNameKey)] as? String, let stylesheetType = NSClassFromString("\(moduleName).\(stylesheetName)") as? Stylesheet.Type {
+        if stylesheetName.lowercased() == "jsonstylesheet" {
+            let stylesheetType = JSONStylesheet.self
+            let stylesheet = useCachedJSON(forStylesheetType: stylesheetType) ? JSONStylesheet.cachedStylesheet! : stylesheetType.init()
+            for string in components where string != "" {
+                if let style = stylesheet[string] {
+                    self.apply(style: style)
+                }
+            }
+        }
+        else if let moduleName = Stylish.appBundle.infoDictionary?[String(kCFBundleNameKey)] as? String, let stylesheetType = NSClassFromString("\(moduleName).\(stylesheetName)") as? Stylesheet.Type {
             let stylesheet = useCachedJSON(forStylesheetType: stylesheetType) ? JSONStylesheet.cachedStylesheet! : stylesheetType.init()
             for string in components where string != "" {
                 if let style = stylesheet[string] {
@@ -151,6 +167,15 @@ public extension Styleable where Self:UIView {
             }
         }
         else if let stylesheetType = Stylish.globalStylesheet {
+            let stylesheet = useCachedJSON(forStylesheetType: stylesheetType) ? JSONStylesheet.cachedStylesheet! : stylesheetType.init()
+            for string in components where string != "" {
+                if let style = stylesheet[string] {
+                    self.apply(style: style)
+                }
+            }
+        }
+        else if let info = Stylish.appBundle.infoDictionary, let stylesheetName = info["Stylesheet"] as? String, stylesheetName.lowercased() == "jsonstylesheet" {
+            let stylesheetType = JSONStylesheet.self
             let stylesheet = useCachedJSON(forStylesheetType: stylesheetType) ? JSONStylesheet.cachedStylesheet! : stylesheetType.init()
             for string in components where string != "" {
                 if let style = stylesheet[string] {
@@ -191,8 +216,16 @@ public extension Styleable where Self:UIView {
                 subview.removeFromSuperview()
             }
         }
-        
-        if let moduleName = Stylish.appBundle.infoDictionary?[String(kCFBundleNameKey)] as? String, let stylesheetType = NSClassFromString("\(moduleName).\(stylesheetName)") as? Stylesheet.Type {
+        if stylesheetName.lowercased() == "jsonstylesheet" {
+            let stylesheetType = JSONStylesheet.self
+            let stylesheet = useCachedJSON(forStylesheetType: stylesheetType) ? JSONStylesheet.cachedStylesheet! : stylesheetType.init()
+            for string in components where string != "" {
+                if stylesheet[string] == nil {
+                    invalidStyle = true
+                }
+            }
+        }
+        else if let moduleName = Stylish.appBundle.infoDictionary?[String(kCFBundleNameKey)] as? String, let stylesheetType = NSClassFromString("\(moduleName).\(stylesheetName)") as? Stylesheet.Type {
             let stylesheet = stylesheetType.init()
             for string in components where string != "" {
                 if stylesheet[string] == nil {
@@ -202,6 +235,15 @@ public extension Styleable where Self:UIView {
         }
         else if let stylesheetType = Stylish.globalStylesheet {
             let stylesheet = stylesheetType.init()
+            for string in components where string != "" {
+                if stylesheet[string] == nil {
+                    invalidStyle = true
+                }
+            }
+        }
+        else if let info = Stylish.appBundle.infoDictionary, let stylesheetName = info["Stylesheet"] as? String, stylesheetName.lowercased() == "jsonstylesheet" {
+            let stylesheetType = JSONStylesheet.self
+            let stylesheet = useCachedJSON(forStylesheetType: stylesheetType) ? JSONStylesheet.cachedStylesheet! : stylesheetType.init()
             for string in components where string != "" {
                 if stylesheet[string] == nil {
                     invalidStyle = true

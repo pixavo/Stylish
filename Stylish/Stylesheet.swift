@@ -22,7 +22,7 @@ public protocol Stylesheet : class {
 public extension Stylesheet {
     
     public func style(named name: String) -> StyleClass? {
-        for (identifier, styleClass) in styleClasses {
+        for (identifier, styleClass) in styleClasses + Stylish.sharedStyleClasses {
             if name.isVariant(of: identifier) {
                 return styleClass
             }

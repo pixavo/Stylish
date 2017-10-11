@@ -32,7 +32,7 @@ To see Stylish in action, download the the folder “StylishExample” from this
 
 Now, go the the info.plist for the StylishExample app and change the “Stylesheet” key’s value from “Graphite” to “Aqua”. Then return to Main.storyboard and watch as the appearance of the scene completely changes without writing any code or even compiled the app.
 
-Go back to the info.plist and change the value for the key “Stylesheet” to now be “StylishExampleJSONStylesheet”.  Go back to Main.storyboard and once again, the whole scene will transform to reflect the new Stylesheet loaded from JSON. 
+Go back to the info.plist and change the value for the key “Stylesheet” to now be “JSONStylesheet”.  Go back to Main.storyboard and once again, the whole scene will transform to reflect the new Stylesheet loaded from JSON. 
 
 At this point, you can open stylesheet.json in Xcode and start changing some of the color, font, or other values in the stylesheet, then return to Main.storyboard to watch the changes you made appear live in Interface Builder.
 
