@@ -93,12 +93,6 @@ public func =?<T>( left:inout T, right:@autoclosure () -> T?) {
     }
 }
 
-public func =?<T>( left:inout T!, right:@autoclosure () -> T?) {
-    if let value = right() {
-        left = value
-    }
-}
-
 public func =?<T>( left:inout T?, right:@autoclosure () -> T?) {
     if let value = right() {
         left = value
