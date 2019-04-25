@@ -40,7 +40,7 @@ class MainViewController : UIViewController {
         case "Aqua" :
             Stylish.globalStylesheet = Aqua.self
         case "JSON" :
-            Stylish.globalStylesheet = StylishExampleJSONStylesheet.self
+            Stylish.globalStylesheet = JSONStylesheet.self
         default :
             return
         }
